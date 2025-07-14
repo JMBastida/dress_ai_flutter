@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1029575571106",
+    "project_id": "dress-ai-34947",
+    "storage_bucket": "dress-ai-34947.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1029575571106:android:c8498da2c6fe2b425f89fb",
+        "android_client_info": {
+          "package_name": "com.example.dress_ai"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbeYmzJE9DtvWzPt5_B_bunywtaZrY7Bk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

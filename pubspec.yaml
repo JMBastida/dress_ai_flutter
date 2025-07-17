@@ -36,11 +36,12 @@ dependencies:
   firebase_auth: ^5.6.2
   cloud_firestore: ^5.6.11
   firebase_storage: ^12.4.9
-  local_rembg: ^1.1.3
   image_picker: ^1.1.2
   http: ^0.13.6
   path_provider: ^2.1.2
   path: ^1.9.0
+  image: ^4.1.7
+  tflite_flutter: ^0.11.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -69,6 +70,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/translations/
+    - assets/tensor/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

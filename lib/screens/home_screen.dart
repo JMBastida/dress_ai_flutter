@@ -1,12 +1,7 @@
+import 'package:dress_ai/screens/upload_photo_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'closet_screen.dart';
-import 'import_url_screen.dart';
-
-final List<String> _titles = [
-  'closet'.tr(),
-  'import'.tr(),
-];
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,7 +15,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _pages = [
     ClosetScreen(),
-    ImportUrlScreen(),
+    UploadPhotoScreen(),
     // Puedes agregar más pantallas aquí como: LooksScreen()
   ];
 

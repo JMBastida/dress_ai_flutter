@@ -1,6 +1,7 @@
 import 'package:dress_ai/firebase_options.dart';
 import 'package:dress_ai/screens/closet_screen.dart';
 import 'package:dress_ai/screens/home_screen.dart';
+import 'package:dress_ai/screens/looks_screen.dart';
 import 'package:dress_ai/screens/upload_photo_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -30,6 +31,7 @@ class MyApp extends StatelessWidget {
         '/': (_) => HomeScreen(),
         '/uploadPhoto': (_) => UploadPhotoScreen(),
         '/closet': (_) => ClosetScreen(),
+        '/looks': (_) => LooksScreen(),
       },
     );
   }

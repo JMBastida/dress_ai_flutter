@@ -1,3 +1,4 @@
+import 'package:dress_ai/screens/looks_screen.dart';
 import 'package:dress_ai/screens/upload_photo_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -16,12 +17,14 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _pages = [
     ClosetScreen(),
     UploadPhotoScreen(),
+    LooksScreen(),
     // Puedes agregar más pantallas aquí como: LooksScreen()
   ];
 
   final List<String> _titles = [
     'closet'.tr(),
     'import'.tr(),
+    "looks".tr()
   ];
 
   @override
@@ -43,6 +46,10 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(
             icon: const Icon(Icons.cloud_upload),
             label: _titles[1],
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.checkroom),
+            label: _titles[2],
           ),
         ],
       ),

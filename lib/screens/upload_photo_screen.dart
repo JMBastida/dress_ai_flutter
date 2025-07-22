@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:dress_ai/services/tf_lite_segmenter_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -53,6 +54,8 @@ class _UploadPhotoScreenState extends State<UploadPhotoScreen> {
       await FirebaseFirestore.instance.collection('clothes').add({
         'imageUrl': downloadUrl,
         'fromUrl': false,
+        'userId': FirebaseAuth.instance.currentUser?.uid,
+        'isPublic': false,
         'createdAt': FieldValue.serverTimestamp(),
       });
 
@@ -98,6 +101,8 @@ class _UploadPhotoScreenState extends State<UploadPhotoScreen> {
             'imageUrl': downloadUrl,
             'fromUrl': true,
             'createdAt': FieldValue.serverTimestamp(),
+            'userId': FirebaseAuth.instance.currentUser?.uid,
+            'isPublic': false,
           });
 
           setState(() {

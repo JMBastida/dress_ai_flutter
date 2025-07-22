@@ -16,63 +16,90 @@ class _LooksScreenState extends State<LooksScreen> {
   late final PainterController _controller;
   final user = FirebaseAuth.instance.currentUser;
   List<String> _clothingImageUrls = [];
+  final List<String> _usedClothingIds = [];
   bool _loading = true;
+  bool _saving = false;
 
   @override
   void initState() {
     super.initState();
     _controller = PainterController();
+    _controller.background = const Color.fromARGB(255, 206, 4, 4).backgroundDrawable;
     _fetchClothingImages();
   }
 
- Future<void> _fetchClothingImages() async {
-  try {
-    final storageRef = FirebaseStorage.instance.ref();
-    final result = await storageRef.child('clothes').listAll();
+  Future<void> _fetchClothingImages() async {
+    try {
+      final query = await FirebaseFirestore.instance
+          .collection('clothes')
+          .where('userId', isEqualTo: user!.uid)
+          .get();
 
-    if (result.items.isEmpty) {
+      final urls = query.docs.map((doc) => doc['imageUrl'] as String).toList();
+
+      setState(() {
+        _clothingImageUrls = urls;
+        _loading = false;
+      });
+    } catch (e) {
+      debugPrint('Error cargando imágenes del look: $e');
       setState(() {
         _clothingImageUrls = [];
         _loading = false;
       });
-      return;
     }
-
-    final urls = await Future.wait(result.items.map((ref) => ref.getDownloadURL()));
-
-    setState(() {
-      _clothingImageUrls = urls;
-      _loading = false;
-    });
-  } catch (e) {
-    debugPrint('Error cargando imágenes del look: $e');
-    setState(() {
-      _clothingImageUrls = [];
-      _loading = false;
-    });
   }
-}
+
   Future<void> _addSticker(String imageUrl) async {
     final image = await NetworkImage(imageUrl).image;
     _controller.addImage(image, const Size(100, 100));
+
+    final id = Uri.parse(imageUrl).pathSegments.last.split('.').first;
+    if (!_usedClothingIds.contains(id)) {
+      _usedClothingIds.add(id);
+    }
   }
 
   Future<void> _saveLook() async {
-    final image = await _controller.renderImage(const Size(512, 512));
-    final bytes = await image.pngBytes;
-
-    final lookRef = FirebaseStorage.instance
-        .ref('looks/${user!.uid}/${DateTime.now().millisecondsSinceEpoch}.png');
-    await lookRef.putData(bytes!);
-    final url = await lookRef.getDownloadURL();
-
-    await FirebaseFirestore.instance.collection('looks').add({
-      'uid': user!.uid,
-      'imageUrl': url,
-      'createdAt': FieldValue.serverTimestamp(),
+    setState(() {
+      _saving = true;
     });
 
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Look guardado correctamente")));
+    try {
+      final renderBox = context.findRenderObject() as RenderBox?;
+      final size = renderBox?.size ?? const Size(512, 512);
+
+      final image = await _controller.renderImage(
+        size,
+      );
+      final bytes = await image.pngBytes;
+
+      final fileName = '${DateTime.now().millisecondsSinceEpoch}.png';
+      final lookRef = FirebaseStorage.instance
+          .ref('looks/${user!.uid}/$fileName');
+      await lookRef.putData(bytes!);
+      final url = await lookRef.getDownloadURL();
+
+      await FirebaseFirestore.instance.collection('looks').add({
+        'userId': user!.uid,
+        'imageUrl': url,
+        'createdAt': FieldValue.serverTimestamp(),
+        'usedClothes': _usedClothingIds,
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Look guardado correctamente")),
+      );
+    } catch (e) {
+      debugPrint("Error guardando el look: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Error al guardar el look")),
+      );
+    } finally {
+      setState(() {
+        _saving = false;
+      });
+    }
   }
 
   void _openStickerPicker() {
@@ -108,8 +135,14 @@ class _LooksScreenState extends State<LooksScreen> {
         title: const Text("Crear Look"),
         actions: [
           IconButton(
-            icon: const Icon(Icons.save),
-            onPressed: _saveLook,
+            icon: _saving
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.save),
+            onPressed: _saving ? null : _saveLook,
           ),
         ],
       ),
